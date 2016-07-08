@@ -1,0 +1,9 @@
+"AddonInfo"
+{
+	"name"			"BuildMode"
+	"version"		"01/17/16"
+	"author_name"		"Awcmon"
+	"author_url"		""
+	"info"			"Very simple build mode."
+	"override"		"0"
+}
