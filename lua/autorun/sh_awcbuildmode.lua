@@ -47,14 +47,14 @@ if(SERVER) then
 	hook.Add("PlayerDisconnect", "BuildDisconnect", BuildDisconnect)
 	
 	--Damage restriction
-	local function BuildShouldTakeDamage(ply, attacker)		
-		if(table.HasValue(BuildModed, ply)) then
-			BuildChatNotify(attacker, "You can't hurt players who are in build mode.")
-			return false
-		end
-		
+	local function BuildShouldTakeDamage(ply, attacker)	
 		if(table.HasValue(BuildModed, attacker) && (attacker != ply)) then
 			BuildChatNotify(attacker, "You can't hurt other players when you're in build mode.")
+			return false
+		end
+	
+		if(table.HasValue(BuildModed, ply)) then
+			BuildChatNotify(attacker, "You can't hurt players who are in build mode.")
 			return false
 		end
 		
