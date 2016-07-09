@@ -197,6 +197,7 @@ if (CLIENT) then
 		render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
 		render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_ALWAYS )
 		
+		render.SetStencilReferenceValue( 42 )
 		
 		for _, ply in pairs( BuildModed ) do
 			if(ply:IsValid() && ply:GetActiveWeapon():IsValid()) then
