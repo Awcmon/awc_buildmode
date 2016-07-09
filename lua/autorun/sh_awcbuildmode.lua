@@ -39,10 +39,17 @@ if(SERVER) then
 			BuildGlobalChatAnnounce(ply, " has entered build mode.")
 			table.insert( BuildModed, ply )
 		end
+		
+		net.Start( "buildrequest" )
+		net.WriteTable(BuildModed)
+		net.Send(player.GetAll())
 	end )
 	
 	local function BuildDisconnect(ply)
 		table.RemoveByValue(BuildModed, ply)
+		net.Start( "buildrequest" )
+		net.WriteTable(BuildModed)
+		net.Send(player.GetAll())
 	end
 	hook.Add("PlayerDisconnect", "BuildDisconnect", BuildDisconnect)
 	
@@ -71,6 +78,8 @@ if(SERVER) then
 end
 
 if (CLIENT) then
+	local BuildModed = {}
+
 	concommand.Add( "buildmode", function(ply, cmd, args, argstring)
 		net.Start( "buildrequest" )
 		net.SendToServer()
@@ -78,6 +87,10 @@ if (CLIENT) then
 
 	net.Receive( "buildnotify", function( len, ply )
 		chat.AddText(Color(46,204,113), "[BuildMode] ", Color(220,220,220), net.ReadString())
+	end )
+	
+	net.Receive( "buildrequest", function( len, ply )
+		BuildModed = net.ReadTable()
 	end )
 	
 	net.Receive( "buildannounce", function( len, ply )
@@ -96,5 +109,41 @@ if (CLIENT) then
 		end
 	end
 	hook.Add( "OnPlayerChat", "BuildChatCommands", BuildChatCommands)
+	
+	--effects
+	
+	
+	//local matBuildMode = CreateMaterial( "matBuildMode", "UnlitGeneric", { [ "$basetexture" ] = "models/props_combine/com_shield001a" } )
+	local matBuildMode = Material("models/props_combine/com_shield001a")
+	local function BuildDrawSilhouette()
+
+		render.ClearStencil()
+		render.SetStencilEnable( true )
+		
+		render.SetStencilWriteMask( 3 ) -- Fix halo lib ( 3 = 0b11 )
+		render.SetStencilTestMask( 3 )
+
+		render.SetStencilFailOperation( STENCILOPERATION_KEEP )
+		render.SetStencilZFailOperation( STENCILOPERATION_KEEP )
+		render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
+		render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_ALWAYS )
+		
+		render.SetStencilReferenceValue( 10 )
+		
+		for _, ply in pairs( BuildModed ) do
+			if(ply:IsValid() && ply:GetActiveWeapon():IsValid()) then
+				ply:DrawModel()
+				ply:GetActiveWeapon():DrawModel()
+			end
+		end
+		
+		render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_EQUAL )
+		render.SetMaterial( matBuildMode )
+		render.DrawScreenQuad()
+		
+		render.SetStencilEnable( false )
+		
+	end
+	hook.Add("PostDrawOpaqueRenderables", "BuildDrawSilhouette", BuildDrawSilhouette)
 	
 end
