@@ -113,8 +113,8 @@ if (CLIENT) then
 		if ply != LocalPlayer() then return end
 	
 		local expl = string.Explode(" ", text, false)
-		
-		if ( expl[1] == "!build" || expl[1] == "!buildmode" || expl[1] == "!pvp" || expl[1] == "/build" || expl[1] == "/buildmode" || expl[1] == "/pvp" ) then
+		local cmp = string.lower(expl[1])
+		if ( cmp == "!build" || cmp == "!buildmode" || cmp == "!pvp" || cmp == "/build" || cmp == "/buildmode" || cmp == "/pvp" ) then
 			net.Start( "buildrequest" )
 			net.SendToServer()
 			return true
