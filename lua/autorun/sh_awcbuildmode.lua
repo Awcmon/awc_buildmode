@@ -39,7 +39,7 @@ if(SERVER) then
 	
 	net.Receive( "buildrequest", function( len, ply )
 		if(table.HasValue(BuildModed, ply)) then
-			if(ply:GetMoveType() == MOVETYPE_NOCLIP) then
+			if(ply:GetMoveType() == MOVETYPE_NOCLIP && !ply:InVehicle()) then
 				BuildChatNotify(ply, "Get out of noclip before you leave build mode.")
 				BuildHUDNotify(ply, "Get out of noclip before you leave build mode.")
 			else
